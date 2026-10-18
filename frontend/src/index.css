@@ -1,0 +1,114 @@
+:root {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #182820;
+  background: #f6f7f3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+a {
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #5f9373;
+  outline-offset: 4px;
+}
+.client-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card-actions {
+  margin-top: 24px;
+}
+
+.client-form,
+.delete-confirmation {
+  padding: 24px;
+  margin: 0 0 24px;
+  border: 1px solid #dce1d7;
+  border-radius: 12px;
+  background: #fafbf8;
+}
+
+.client-form h3,
+.delete-confirmation h3 {
+  margin: 0 0 20px;
+}
+
+.client-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.client-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+.client-form-grid label {
+  display: block;
+}
+
+.button-danger {
+  padding: 13px 18px;
+  border: 1px solid #e6b9af;
+  border-radius: 8px;
+  background: #fff;
+  color: #9b3020;
+  font-weight: 600;
+}
+
+.button-danger:hover:not(:disabled) {
+  background: #fff0ed;
+}
+
+.success-message {
+  padding: 12px;
+  border: 1px solid #c7ddbf;
+  border-radius: 8px;
+  background: #eef6e9;
+  color: #285036;
+  font-size: 14px;
+}
+
+.delete-confirmation > p {
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .client-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
