@@ -2,7 +2,10 @@ const express = require("express");
 const { z } = require("zod");
 
 function validId(id) {
-  return /^[1-9]\d{0,18}$/.test(id) && BigInt(id) <= 9223372036854775807n;
+  return (
+    /^[1-9]\d{0,18}$/.test(id) &&
+    BigInt(id) <= 9223372036854775807n
+  );
 }
 
 const projectDetails = z.object({
@@ -13,7 +16,7 @@ const projectDetails = z.object({
     .string()
     .regex(
       /^(0|[1-9]\d{0,9})(\.\d{1,2})?$/,
-      "Enter a non-negative budget with up to two decimal places.",
+      "Enter a non-negative budget with up to two decimal places."
     )
     .default("0"),
 });
@@ -34,6 +37,57 @@ function invalidDetails(res, error) {
   });
 }
 
+// All calculated monetary values use PostgreSQL NUMERIC arithmetic.
+// Decimal results are returned as strings by pg.
+const projectSelect = `
+  SELECT
+    p.id,
+    p.client_id,
+    c.name AS client_name,
+    p.name,
+    p.description,
+    p.status,
+    p.budget,
+    p.created_at,
+    c.hourly_rate AS current_hourly_rate,
+
+    totals.logged_seconds,
+    ROUND(totals.logged_seconds / 3600, 4) AS logged_hours,
+
+    ROUND(
+      totals.logged_seconds / 3600 * c.hourly_rate,
+      2
+    ) AS estimated_work_value,
+
+    p.budget - ROUND(
+      totals.logged_seconds / 3600 * c.hourly_rate,
+      2
+    ) AS remaining_budget,
+
+    CASE
+      WHEN p.budget > 0 THEN ROUND(
+        (totals.logged_seconds / 3600 * c.hourly_rate)
+        / p.budget * 100,
+        2
+      )
+      ELSE NULL
+    END AS budget_used_percent
+
+  FROM projects AS p
+  JOIN clients AS c ON c.id = p.client_id
+
+  LEFT JOIN LATERAL (
+    SELECT COALESCE(
+      SUM(EXTRACT(EPOCH FROM (t.ended_at - t.started_at))),
+      0::numeric
+    ) AS logged_seconds
+    FROM time_entries AS t
+    WHERE t.project_id = p.id
+      AND t.user_id = c.user_id
+      AND t.ended_at IS NOT NULL
+  ) AS totals ON TRUE
+`;
+
 module.exports = function createProjectsRouter(pool) {
   const router = express.Router();
 
@@ -47,28 +101,28 @@ module.exports = function createProjectsRouter(pool) {
     next();
   });
 
+  // List owned projects with time and budget estimates.
   router.get("/", async (req, res) => {
     try {
       const result = await pool.query(
-        `SELECT p.id, p.client_id, c.name AS client_name,
-                p.name, p.description, p.status, p.budget, p.created_at
-         FROM projects AS p
-         JOIN clients AS c ON c.id = p.client_id
+        `${projectSelect}
          WHERE c.user_id = $1
          ORDER BY p.created_at DESC, p.id DESC
          LIMIT 100`,
-        [req.session.userId],
+        [req.session.userId]
       );
 
       return res.json({ projects: result.rows });
     } catch (error) {
       console.error("Project listing failed:", error.message);
+
       return res.status(500).json({
         error: "Unable to retrieve projects.",
       });
     }
   });
 
+  // Create a project under an owned client.
   router.post("/", async (req, res) => {
     const parsed = createSchema.safeParse(req.body);
 
@@ -94,14 +148,18 @@ module.exports = function createProjectsRouter(pool) {
           data.budget,
           data.client_id,
           req.session.userId,
-        ],
+        ]
       );
 
       if (!result.rows[0]) {
-        return res.status(404).json({ error: "Client not found." });
+        return res.status(404).json({
+          error: "Client not found.",
+        });
       }
 
-      return res.status(201).json({ project: result.rows[0] });
+      return res.status(201).json({
+        project: result.rows[0],
+      });
     } catch (error) {
       if (error.code === "23503") {
         return res.status(409).json({
@@ -110,39 +168,42 @@ module.exports = function createProjectsRouter(pool) {
       }
 
       console.error("Project creation failed:", error.message);
+
       return res.status(500).json({
         error: "Unable to create project.",
       });
     }
   });
 
-  // Validate the ID for every route below.
   router.param("id", (req, res, next, id) => {
     if (!validId(id)) {
-      return res.status(400).json({ error: "Invalid project ID." });
+      return res.status(400).json({
+        error: "Invalid project ID.",
+      });
     }
 
     next();
   });
 
+  // View an owned project with time and budget estimates.
   router.get("/:id", async (req, res) => {
     try {
       const result = await pool.query(
-        `SELECT p.id, p.client_id, c.name AS client_name,
-                p.name, p.description, p.status, p.budget, p.created_at
-         FROM projects AS p
-         JOIN clients AS c ON c.id = p.client_id
+        `${projectSelect}
          WHERE p.id = $1 AND c.user_id = $2`,
-        [req.params.id, req.session.userId],
+        [req.params.id, req.session.userId]
       );
 
       if (!result.rows[0]) {
-        return res.status(404).json({ error: "Project not found." });
+        return res.status(404).json({
+          error: "Project not found.",
+        });
       }
 
       return res.json({ project: result.rows[0] });
     } catch (error) {
       console.error("Project lookup failed:", error.message);
+
       return res.status(500).json({
         error: "Unable to retrieve project.",
       });
@@ -162,10 +223,14 @@ module.exports = function createProjectsRouter(pool) {
     try {
       const result = await pool.query(
         `UPDATE projects AS p
-         SET name = $1, description = $2, status = $3, budget = $4
+         SET name = $1,
+             description = $2,
+             status = $3,
+             budget = $4
          FROM clients AS c
          WHERE p.client_id = c.id
-           AND p.id = $5 AND c.user_id = $6
+           AND p.id = $5
+           AND c.user_id = $6
          RETURNING p.id, p.client_id, p.name, p.description,
                    p.status, p.budget, p.created_at`,
         [
@@ -175,38 +240,47 @@ module.exports = function createProjectsRouter(pool) {
           data.budget,
           req.params.id,
           req.session.userId,
-        ],
+        ]
       );
 
       if (!result.rows[0]) {
-        return res.status(404).json({ error: "Project not found." });
+        return res.status(404).json({
+          error: "Project not found.",
+        });
       }
 
       return res.json({ project: result.rows[0] });
     } catch (error) {
       console.error("Project update failed:", error.message);
+
       return res.status(500).json({
         error: "Unable to update project.",
       });
     }
   });
 
+  // Delete only an owned project without dependent records.
   router.delete("/:id", async (req, res) => {
     try {
       const result = await pool.query(
         `DELETE FROM projects AS p
          USING clients AS c
          WHERE p.client_id = c.id
-           AND p.id = $1 AND c.user_id = $2
+           AND p.id = $1
+           AND c.user_id = $2
          RETURNING p.id`,
-        [req.params.id, req.session.userId],
+        [req.params.id, req.session.userId]
       );
 
       if (!result.rows[0]) {
-        return res.status(404).json({ error: "Project not found." });
+        return res.status(404).json({
+          error: "Project not found.",
+        });
       }
 
-      return res.json({ message: "Project deleted successfully." });
+      return res.json({
+        message: "Project deleted successfully.",
+      });
     } catch (error) {
       if (error.code === "23503") {
         return res.status(409).json({
@@ -215,6 +289,7 @@ module.exports = function createProjectsRouter(pool) {
       }
 
       console.error("Project deletion failed:", error.message);
+
       return res.status(500).json({
         error: "Unable to delete project.",
       });

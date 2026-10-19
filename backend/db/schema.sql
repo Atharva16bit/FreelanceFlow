@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict R31OkUNMx92WirTnVyXdJML8TYWujaHPxEUOp6lmWQ7tdYuQdfdWyEY0VYkJ9UA
+\restrict AWrepCakyKJm3twkYTPw7Xv75rbA2SsrA8VY0ZaX2lZuTOfB3u2T7InzZibtjKZ
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
@@ -119,6 +119,39 @@ ALTER TABLE public.tasks ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: time_entries; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.time_entries (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    source character varying(10) DEFAULT 'timer'::character varying NOT NULL,
+    started_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    ended_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT time_entries_duration_valid CHECK (((ended_at IS NULL) OR (ended_at > started_at))),
+    CONSTRAINT time_entries_manual_finished CHECK ((((source)::text <> 'manual'::text) OR (ended_at IS NOT NULL))),
+    CONSTRAINT time_entries_source_valid CHECK (((source)::text = ANY ((ARRAY['timer'::character varying, 'manual'::character varying])::text[])))
+);
+
+
+--
+-- Name: time_entries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.time_entries ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.time_entries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: user_sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -185,6 +218,14 @@ ALTER TABLE ONLY public.tasks
 
 
 --
+-- Name: time_entries time_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_entries
+    ADD CONSTRAINT time_entries_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -230,6 +271,20 @@ CREATE INDEX tasks_project_id_idx ON public.tasks USING btree (project_id);
 
 
 --
+-- Name: time_entries_one_running_per_user; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX time_entries_one_running_per_user ON public.time_entries USING btree (user_id) WHERE (ended_at IS NULL);
+
+
+--
+-- Name: time_entries_user_project_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX time_entries_user_project_idx ON public.time_entries USING btree (user_id, project_id);
+
+
+--
 -- Name: user_sessions_expire_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -261,8 +316,24 @@ ALTER TABLE ONLY public.tasks
 
 
 --
+-- Name: time_entries time_entries_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_entries
+    ADD CONSTRAINT time_entries_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
+
+
+--
+-- Name: time_entries time_entries_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_entries
+    ADD CONSTRAINT time_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict R31OkUNMx92WirTnVyXdJML8TYWujaHPxEUOp6lmWQ7tdYuQdfdWyEY0VYkJ9UA
+\unrestrict AWrepCakyKJm3twkYTPw7Xv75rbA2SsrA8VY0ZaX2lZuTOfB3u2T7InzZibtjKZ
 

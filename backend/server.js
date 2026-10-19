@@ -57,6 +57,7 @@ app.use("/api/auth", require("./auth")(pool));
 app.use("/api/clients", require("./clients")(pool));
 app.use("/api/projects", require("./projects")(pool));
 app.use("/api/tasks", require("./tasks")(pool));
+app.use("/api/time-entries", require("./timeEntries")(pool));
 
 app.get("/api/health", async (req, res) => {
   try {

@@ -9,6 +9,18 @@ const emptyForm = {
   budget: "0.00",
 };
 
+function formatNumber(value, decimals = 2) {
+  if (value === null || value === undefined) return "Unavailable";
+
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "Unavailable";
+
+  return number.toLocaleString("en-IN", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+}
+
 function describeError(error) {
   if (error.status === 401) {
     return "Your session expired. Sign out and sign in again.";
@@ -18,7 +30,89 @@ function describeError(error) {
     ?.map((item) => `${item.field}: ${item.message}`)
     .join(" ");
 
-  return details ? `${error.message} ${details}` : error.message;
+  return details
+    ? `${error.message} ${details}`
+    : error.message || "Unable to reach the server.";
+}
+
+function ProjectMetrics({ project }) {
+  const percentage =
+    project.budget_used_percent === null ||
+    project.budget_used_percent === undefined
+      ? null
+      : Number(project.budget_used_percent);
+
+  const hasPercentage = percentage !== null && Number.isFinite(percentage);
+
+  const remaining = Number(project.remaining_budget);
+  const overBudget =
+    project.remaining_budget != null &&
+    Number.isFinite(remaining) &&
+    remaining < 0;
+
+  return (
+    <>
+      <dl className="client-details project-metrics">
+        <div>
+          <dt>Budget</dt>
+          <dd>{formatNumber(project.budget)}</dd>
+        </div>
+
+        <div>
+          <dt>Logged hours</dt>
+          <dd>{formatNumber(project.logged_hours, 4)}</dd>
+        </div>
+
+        <div>
+          <dt>Current hourly rate</dt>
+          <dd>{formatNumber(project.current_hourly_rate)}</dd>
+        </div>
+
+        <div>
+          <dt>Estimated work value</dt>
+          <dd>{formatNumber(project.estimated_work_value)}</dd>
+        </div>
+
+        <div>
+          <dt>{overBudget ? "Over budget by" : "Remaining budget"}</dt>
+          <dd className={overBudget ? "budget-warning" : undefined}>
+            {overBudget
+              ? formatNumber(Math.abs(remaining))
+              : formatNumber(project.remaining_budget)}
+          </dd>
+        </div>
+      </dl>
+
+      <div className="budget-usage">
+        {hasPercentage ? (
+          <>
+            <p className={overBudget ? "budget-warning" : undefined}>
+              <strong>{formatNumber(percentage)}%</strong> of budget used
+            </p>
+
+            <progress
+              className="budget-progress"
+              max={100}
+              value={Math.min(100, Math.max(0, percentage))}
+              aria-label={`Estimated budget used for ${project.name}`}
+              aria-valuetext={`${formatNumber(percentage)} percent`}
+            />
+          </>
+        ) : (
+          <p className="muted">
+            {Number(project.budget) === 0
+              ? "Set a budget above zero to calculate percentage used."
+              : "Budget percentage unavailable."}
+          </p>
+        )}
+
+        <p className="metric-note">
+          Estimate based on finished time entries and the client's current
+          hourly rate. Running timers are excluded.
+        </p>
+      </div>
+    </>
+  );
 }
 
 export default function Projects() {
@@ -125,7 +219,10 @@ export default function Projects() {
     setNotice("");
 
     try {
-      await api(`/projects/${deleteTarget.id}`, { method: "DELETE" });
+      await api(`/projects/${deleteTarget.id}`, {
+        method: "DELETE",
+      });
+
       setDeleteTarget(null);
       setNotice("Project deleted.");
       setRefresh((value) => value + 1);
@@ -153,6 +250,7 @@ export default function Projects() {
           >
             {loading ? "Loading…" : "Refresh projects"}
           </button>
+
           <button
             type="button"
             className="button-primary"
@@ -260,14 +358,16 @@ export default function Projects() {
           )}
 
           <div className="client-actions">
-            <button className="button-primary" disabled={saving}>
+            <button type="submit" className="button-primary" disabled={saving}>
               {saving ? "Saving…" : "Save project"}
             </button>
+
             <button
               type="button"
               className="button-secondary"
               onClick={() => {
                 setForm(null);
+                setEditingId(null);
                 setError("");
               }}
               disabled={saving}
@@ -283,13 +383,15 @@ export default function Projects() {
           <h3>Delete {deleteTarget.name}?</h3>
           <p>
             This permanently deletes the project. Projects with linked tasks or
-            other records cannot be deleted.
+            time entries cannot be deleted.
           </p>
+
           {error && (
             <p className="error-message" role="alert">
               {error}
             </p>
           )}
+
           <div className="client-actions">
             <button
               type="button"
@@ -299,6 +401,7 @@ export default function Projects() {
             >
               {saving ? "Deleting…" : "Confirm deletion"}
             </button>
+
             <button
               type="button"
               className="button-secondary"
@@ -331,35 +434,32 @@ export default function Projects() {
               <span className="status-badge">{project.status}</span>
               <h3>{project.name}</h3>
               <p className="muted">{project.client_name}</p>
+
               <p className="project-description">
                 {project.description || "No description provided."}
               </p>
-              <dl className="client-details">
-                <div>
-                  <dt>Budget</dt>
-                  <dd>
-                    {Number(project.budget).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </dd>
-                </div>
-              </dl>
+
+              <ProjectMetrics project={project} />
+
               <div className="client-actions card-actions">
                 <button
                   type="button"
                   className="button-secondary"
+                  aria-label={`Edit ${project.name}`}
                   onClick={() => openForm(project)}
                   disabled={saving}
                 >
                   Edit
                 </button>
+
                 <button
                   type="button"
                   className="button-danger"
+                  aria-label={`Delete ${project.name}`}
                   onClick={() => {
                     setDeleteTarget(project);
                     setForm(null);
+                    setEditingId(null);
                     setError("");
                     setNotice("");
                   }}

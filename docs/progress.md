@@ -204,3 +204,18 @@ Deployment and production security review remain pending.
 
 Week 2: persistent timer, manual time entries,
 project hours, and budget consumption.
+
+
+### Browser Timer Recovery — Verified
+Started a timer, refreshed the page while it was running,
+and confirmed that elapsed time continued from the saved start.
+Stopped the timer and verified the saved entry in time-log history.
+
+### Week 2 Status
+Core time-tracking milestone completed locally:
+persistent timer, manual entries, time-log history,
+project hours, and budget-consumption estimates.
+
+Budget estimates use current client rates.
+Invoice rate snapshots and duplicate-billing protection
+will be implemented during Week 3.
