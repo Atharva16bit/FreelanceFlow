@@ -3,8 +3,9 @@ import Clients from "./Clients";
 import Projects from "./Projects";
 import Tasks from "./Tasks";
 import Timer from "./Timer";
-import { api } from "./api";
 import TimeLogs from "./TimeLogs";
+import Invoices from "./Invoices";
+import { api } from "./api";
 import "./App.css";
 
 function errorMessage(error) {
@@ -179,8 +180,8 @@ export default function App() {
           <h1>Welcome, {user.name}.</h1>
 
           <p className="muted">
-            Manage your clients, organise projects, track tasks, and record your
-            working time.
+            Manage clients and projects, track your working time, and invoice
+            completed work.
           </p>
 
           <dl className="account-details">
@@ -208,7 +209,10 @@ export default function App() {
           <Tasks key={`tasks-${user.id}`} />
 
           <Timer key={`timer-${user.id}`} />
+
           <TimeLogs key={`time-logs-${user.id}`} />
+
+          <Invoices key={`invoices-${user.id}`} />
         </section>
       </main>
     );

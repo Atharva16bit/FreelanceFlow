@@ -205,13 +205,14 @@ Deployment and production security review remain pending.
 Week 2: persistent timer, manual time entries,
 project hours, and budget consumption.
 
-
 ### Browser Timer Recovery — Verified
+
 Started a timer, refreshed the page while it was running,
 and confirmed that elapsed time continued from the saved start.
 Stopped the timer and verified the saved entry in time-log history.
 
 ### Week 2 Status
+
 Core time-tracking milestone completed locally:
 persistent timer, manual entries, time-log history,
 project hours, and budget-consumption estimates.
@@ -219,3 +220,36 @@ project hours, and budget-consumption estimates.
 Budget estimates use current client rates.
 Invoice rate snapshots and duplicate-billing protection
 will be implemented during Week 3.
+
+## Week 3: Invoicing — 19 October 2026
+
+### Implemented and Verified
+
+- Previewed finished, unbilled entries by client and date range.
+- Created invoices and saved line items in one database transaction.
+- Prevented duplicate billing with a unique time-entry constraint.
+- Excluded billed entries from subsequent previews.
+- Saved client details, hourly rates, durations, and line amounts.
+- Verified that changing the current client rate did not alter FF-1.
+- Listed and retrieved invoices with ownership protection.
+- Updated paid/unpaid status with persistent browser results.
+- Repeated paid updates preserved the original payment timestamp.
+- Generated and downloaded invoice PDFs through API and browser.
+- Blocked Free-plan PDF access and cross-user PDF access.
+- Created an invoice from selected entries through the browser.
+- Frontend lint and production build passed.
+
+### Calculation Rules
+
+Invoice totals sum individually rounded line amounts.
+Project estimates round the combined work value, so a small
+rounding difference can occur.
+
+### Scope
+
+Payment status is recorded manually; no payment gateway is connected.
+The demo account was assigned Pro locally for PDF testing.
+
+### Next Milestone
+
+Dashboard, sample data, deployment, final testing, and final report.

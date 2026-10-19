@@ -438,3 +438,74 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+.invoice-detail {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid #dce1d7;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.invoice-table-wrap {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.invoice-table caption {
+  text-align: left;
+  margin-bottom: 12px;
+  color: #606c63;
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e3e7de;
+  text-align: left;
+  vertical-align: top;
+}
+
+.invoice-table th {
+  background: #f6f7f3;
+}
+
+.invoice-table td:first-child {
+  min-width: 200px;
+  white-space: pre-wrap;
+}
+
+.invoice-total {
+  margin-top: 24px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 700;
+}
+.invoice-list-heading {
+  margin: 32px 0 20px;
+}
+.invoice-selection .invoice-entry-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e3e7de;
+  line-height: 1.7;
+}
+
+.invoice-selection .invoice-entry-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 5px 0 0;
+}
+
+.invoice-selection .invoice-entry-option span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

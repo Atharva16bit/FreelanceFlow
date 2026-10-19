@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AWrepCakyKJm3twkYTPw7Xv75rbA2SsrA8VY0ZaX2lZuTOfB3u2T7InzZibtjKZ
+\restrict Jy6fafXntd7KTQGPzhJSLb4Liyj7M1QbbcBwjQBmdE4kSIHR1aP8gHiQ5mzKPTx
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
@@ -47,6 +47,79 @@ CREATE TABLE public.clients (
 
 ALTER TABLE public.clients ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.clients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: invoice_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.invoice_items (
+    id bigint NOT NULL,
+    invoice_id bigint NOT NULL,
+    time_entry_id bigint NOT NULL,
+    project_name character varying(150) NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    started_at timestamp with time zone NOT NULL,
+    ended_at timestamp with time zone NOT NULL,
+    hourly_rate numeric(12,2) NOT NULL,
+    duration_seconds numeric GENERATED ALWAYS AS (EXTRACT(epoch FROM (ended_at - started_at))) STORED,
+    amount numeric GENERATED ALWAYS AS (round(((EXTRACT(epoch FROM (ended_at - started_at)) / (3600)::numeric) * hourly_rate), 2)) STORED,
+    CONSTRAINT invoice_items_duration_valid CHECK ((isfinite(started_at) AND isfinite(ended_at) AND (ended_at > started_at))),
+    CONSTRAINT invoice_items_rate_valid CHECK (((hourly_rate >= (0)::numeric) AND (hourly_rate <> 'NaN'::numeric)))
+);
+
+
+--
+-- Name: invoice_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.invoice_items ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.invoice_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: invoices; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.invoices (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    client_id bigint NOT NULL,
+    client_name character varying(150) NOT NULL,
+    client_email character varying(254),
+    client_company character varying(150),
+    currency character varying(3) DEFAULT 'INR'::character varying NOT NULL,
+    status character varying(10) DEFAULT 'unpaid'::character varying NOT NULL,
+    issued_on date DEFAULT CURRENT_DATE NOT NULL,
+    due_on date NOT NULL,
+    paid_at timestamp with time zone,
+    notes text DEFAULT ''::text NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT invoices_currency_valid CHECK (((currency)::text = 'INR'::text)),
+    CONSTRAINT invoices_due_date_valid CHECK ((due_on >= issued_on)),
+    CONSTRAINT invoices_payment_valid CHECK (((((status)::text = 'unpaid'::text) AND (paid_at IS NULL)) OR (((status)::text = 'paid'::text) AND (paid_at IS NOT NULL)))),
+    CONSTRAINT invoices_status_valid CHECK (((status)::text = ANY ((ARRAY['unpaid'::character varying, 'paid'::character varying])::text[])))
+);
+
+
+--
+-- Name: invoices_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.invoices ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.invoices_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -202,6 +275,30 @@ ALTER TABLE ONLY public.clients
 
 
 --
+-- Name: invoice_items invoice_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoice_items
+    ADD CONSTRAINT invoice_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: invoice_items invoice_items_time_entry_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoice_items
+    ADD CONSTRAINT invoice_items_time_entry_id_key UNIQUE (time_entry_id);
+
+
+--
+-- Name: invoices invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoices
+    ADD CONSTRAINT invoices_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -257,6 +354,27 @@ CREATE INDEX clients_user_id_idx ON public.clients USING btree (user_id);
 
 
 --
+-- Name: invoice_items_invoice_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX invoice_items_invoice_id_idx ON public.invoice_items USING btree (invoice_id);
+
+
+--
+-- Name: invoices_client_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX invoices_client_id_idx ON public.invoices USING btree (client_id);
+
+
+--
+-- Name: invoices_user_created_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX invoices_user_created_idx ON public.invoices USING btree (user_id, created_at DESC, id DESC);
+
+
+--
 -- Name: projects_client_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -300,6 +418,38 @@ ALTER TABLE ONLY public.clients
 
 
 --
+-- Name: invoice_items invoice_items_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoice_items
+    ADD CONSTRAINT invoice_items_invoice_id_fkey FOREIGN KEY (invoice_id) REFERENCES public.invoices(id);
+
+
+--
+-- Name: invoice_items invoice_items_time_entry_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoice_items
+    ADD CONSTRAINT invoice_items_time_entry_id_fkey FOREIGN KEY (time_entry_id) REFERENCES public.time_entries(id);
+
+
+--
+-- Name: invoices invoices_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoices
+    ADD CONSTRAINT invoices_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.clients(id);
+
+
+--
+-- Name: invoices invoices_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invoices
+    ADD CONSTRAINT invoices_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: projects projects_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -335,5 +485,5 @@ ALTER TABLE ONLY public.time_entries
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AWrepCakyKJm3twkYTPw7Xv75rbA2SsrA8VY0ZaX2lZuTOfB3u2T7InzZibtjKZ
+\unrestrict Jy6fafXntd7KTQGPzhJSLb4Liyj7M1QbbcBwjQBmdE4kSIHR1aP8gHiQ5mzKPTx
 
