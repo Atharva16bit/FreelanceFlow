@@ -1,7 +1,10 @@
 const { z } = require("zod");
 
 function validId(value) {
-  return /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n;
+  return (
+    /^[1-9]\d{0,18}$/.test(value) &&
+    BigInt(value) <= 9223372036854775807n
+  );
 }
 
 function validDate(value) {
@@ -11,7 +14,8 @@ function validDate(value) {
   const date = new Date(`${value}T00:00:00.000Z`);
 
   return (
-    Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+    Number.isFinite(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value
   );
 }
 
@@ -58,7 +62,7 @@ module.exports = function createInvoiceHandler(pool) {
          FROM clients
          WHERE id = $1 AND user_id = $2
          FOR UPDATE`,
-        [data.client_id, req.session.userId],
+        [data.client_id, req.session.userId]
       );
 
       const client = clientResult.rows[0];
@@ -72,7 +76,7 @@ module.exports = function createInvoiceHandler(pool) {
         `SELECT to_char(
            clock_timestamp() AT TIME ZONE 'Asia/Kolkata',
            'YYYY-MM-DD'
-         ) AS issued_on`,
+         ) AS issued_on`
       );
 
       const issuedOn = dateResult.rows[0].issued_on;
@@ -96,7 +100,11 @@ module.exports = function createInvoiceHandler(pool) {
            AND t.ended_at IS NOT NULL
          ORDER BY t.id
          FOR UPDATE OF t`,
-        [data.time_entry_ids, req.session.userId, data.client_id],
+        [
+          data.time_entry_ids,
+          req.session.userId,
+          data.client_id,
+        ]
       );
 
       if (entryResult.rows.length !== data.time_entry_ids.length) {
@@ -113,7 +121,7 @@ module.exports = function createInvoiceHandler(pool) {
          FROM invoice_items
          WHERE time_entry_id = ANY($1::bigint[])
          LIMIT 1`,
-        [data.time_entry_ids],
+        [data.time_entry_ids]
       );
 
       if (billedResult.rows.length > 0) {
@@ -144,7 +152,7 @@ module.exports = function createInvoiceHandler(pool) {
           issuedOn,
           data.due_on,
           data.notes,
-        ],
+        ]
       );
 
       const invoice = invoiceResult.rows[0];
@@ -174,7 +182,7 @@ module.exports = function createInvoiceHandler(pool) {
           data.time_entry_ids,
           req.session.userId,
           client.id,
-        ],
+        ]
       );
 
       if (itemsResult.rows.length !== data.time_entry_ids.length) {
@@ -185,7 +193,7 @@ module.exports = function createInvoiceHandler(pool) {
         `SELECT COALESCE(SUM(amount), 0)::numeric AS total
          FROM invoice_items
          WHERE invoice_id = $1`,
-        [invoice.id],
+        [invoice.id]
       );
 
       await connection.query("COMMIT");
