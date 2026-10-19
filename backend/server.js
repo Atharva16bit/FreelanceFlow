@@ -78,7 +78,37 @@ app.get("/api/health", async (req, res) => {
     });
   }
 });
+// Unknown API endpoints must return JSON, not the React page.
+app.use("/api", (req, res) => {
+  return res.status(404).json({ error: "API endpoint not found." });
+});
 
+// Enable the built frontend independently of production HTTPS settings.
+if (process.env.SERVE_FRONTEND === "true") {
+  const fs = require("node:fs");
+  const frontendDirectory = path.join(__dirname, "..", "frontend", "dist");
+  const frontendIndex = path.join(frontendDirectory, "index.html");
+
+  if (!fs.existsSync(frontendIndex)) {
+    throw new Error(
+      "Frontend build missing. Run npm run build in the frontend folder.",
+    );
+  }
+
+  app.use(
+    express.static(frontendDirectory, {
+      maxAge: 0,
+      setHeaders(res) {
+        res.set("Cache-Control", "no-cache");
+      },
+    }),
+  );
+
+  app.get("/", (req, res) => {
+    res.set("Cache-Control", "no-cache");
+    return res.sendFile(frontendIndex);
+  });
+}
 // Handle errors passed by middleware, including session storage.
 app.use((error, req, res, next) => {
   console.error("Request failed:", error.message);
