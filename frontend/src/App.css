@@ -509,3 +509,168 @@ textarea:focus {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.dashboard-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #dce5df;
+}
+
+.dashboard-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-heading h2,
+.dashboard-stat h3 {
+  margin: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-stat {
+  min-width: 0;
+  padding: 1.25rem;
+  background: #f5f8f5;
+  border: 1px solid #dce5df;
+  border-radius: 14px;
+}
+
+.dashboard-stat h3 {
+  color: #526359;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.dashboard-value {
+  margin: 0.75rem 0;
+  color: #173f30;
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-deadlines {
+  margin-top: 1.5rem;
+}
+
+.dashboard-task-list {
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-task {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #dce5df;
+}
+
+.dashboard-task > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-task p {
+  margin: 0.4rem 0 0;
+}
+
+.dashboard-task-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-heading,
+  .dashboard-task {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-task-meta {
+    align-items: flex-start;
+  }
+}
+.revenue-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #dce5df;
+}
+
+.revenue-chart {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.revenue-month {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #dce5df;
+  border-radius: 12px;
+  background: #f5f8f5;
+}
+
+.revenue-month h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+}
+
+.revenue-series + .revenue-series {
+  margin-top: 0.85rem;
+}
+
+.revenue-series-label {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.revenue-series-label strong {
+  overflow-wrap: anywhere;
+}
+
+.revenue-track {
+  height: 12px;
+  overflow: hidden;
+  background: #e3e9e5;
+  border-radius: 999px;
+}
+
+.revenue-bar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.revenue-bar-collected {
+  background: #226846;
+}
+
+.revenue-bar-outstanding {
+  background: #b87516;
+}

@@ -59,6 +59,7 @@ app.use("/api/projects", require("./projects")(pool));
 app.use("/api/tasks", require("./tasks")(pool));
 app.use("/api/time-entries", require("./timeEntries")(pool));
 app.use("/api/invoices", require("./invoices")(pool));
+app.use("/api/dashboard", require("./dashboard")(pool));
 
 app.get("/api/health", async (req, res) => {
   try {

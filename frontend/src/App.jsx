@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Dashboard from "./Dashboard";
 import Clients from "./Clients";
 import Projects from "./Projects";
 import Tasks from "./Tasks";
@@ -9,13 +10,13 @@ import { api } from "./api";
 import "./App.css";
 
 function errorMessage(error) {
-  const details = error.details
-    ?.map((item) => `${item.field}: ${item.message}`)
-    .join(" ");
+  const details = Array.isArray(error.details)
+    ? error.details.map((item) => `${item.field}: ${item.message}`).join(" ")
+    : "";
 
-  return details
-    ? `${error.message} ${details}`
-    : error.message || "Unable to reach the server.";
+  const message = error.message || "Unable to reach the server.";
+
+  return details ? `${message} ${details}` : message;
 }
 
 export default function App() {
@@ -75,13 +76,18 @@ export default function App() {
     setError("");
     setNotice("");
 
+    if (registering && !name.trim()) {
+      setError("Enter your name.");
+      return;
+    }
+
     if (registering && password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    if (registering && new TextEncoder().encode(password).length > 72) {
-      setError("Password must not exceed 72 bytes.");
+    if (new TextEncoder().encode(password).length > 72) {
+      setError("Password must not exceed 72 UTF-8 bytes.");
       return;
     }
 
@@ -92,8 +98,8 @@ export default function App() {
         await api("/auth/register", {
           method: "POST",
           body: JSON.stringify({
-            name,
-            email,
+            name: name.trim(),
+            email: email.trim(),
             password,
           }),
         });
@@ -106,7 +112,7 @@ export default function App() {
         const data = await api("/auth/login", {
           method: "POST",
           body: JSON.stringify({
-            email,
+            email: email.trim(),
             password,
           }),
         });
@@ -180,8 +186,7 @@ export default function App() {
           <h1>Welcome, {user.name}.</h1>
 
           <p className="muted">
-            Manage clients and projects, track your working time, and invoice
-            completed work.
+            Manage clients, organise projects, track time, and create invoices.
           </p>
 
           <dl className="account-details">
@@ -201,6 +206,8 @@ export default function App() {
               {error}
             </p>
           )}
+
+          <Dashboard key={`dashboard-${user.id}`} />
 
           <Clients key={`clients-${user.id}`} />
 
@@ -277,6 +284,7 @@ export default function App() {
 
                 <input
                   id="name"
+                  name="name"
                   type="text"
                   autoComplete="name"
                   value={name}
@@ -292,6 +300,7 @@ export default function App() {
 
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="username"
               placeholder="you@example.com"
@@ -306,6 +315,7 @@ export default function App() {
 
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete={registering ? "new-password" : "current-password"}
               value={password}
@@ -326,6 +336,7 @@ export default function App() {
 
                 <input
                   id="confirm-password"
+                  name="confirmPassword"
                   type="password"
                   autoComplete="new-password"
                   value={confirmPassword}

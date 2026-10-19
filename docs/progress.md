@@ -253,3 +253,37 @@ The demo account was assigned Pro locally for PDF testing.
 ### Next Milestone
 
 Dashboard, sample data, deployment, final testing, and final report.
+
+## Week 4 — Dashboard and financial overview
+
+Implemented:
+
+- Active-project count.
+- Unpaid-invoice count and outstanding amount.
+- Collected revenue from invoices currently marked paid.
+- Overdue-invoice and overdue-task counts.
+- Upcoming unfinished tasks for active projects.
+- Six-month financial chart, including months with zero activity.
+- India Standard Time boundaries for reporting.
+
+Verified:
+
+- Dashboard API returns Atharva's summary and upcoming tasks.
+- Financial API returns six monthly totals.
+- Sai's dashboard and financial overview exclude Atharva's data.
+- Frontend ESLint check passed.
+- Frontend production build passed.
+
+Reporting limitations:
+
+- Payment status is updated manually.
+- Monthly figures reflect current invoice statuses, not historical
+  month-end balances.
+- Browser payment-status/chart refresh verification remains to be recorded.
+
+Remaining:
+
+- Demonstration data and evaluator setup instructions.
+- Deployment configuration and security review.
+- Deployment and final smoke tests.
+- Final project report.
