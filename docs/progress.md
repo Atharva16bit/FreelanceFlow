@@ -287,3 +287,17 @@ Remaining:
 - Deployment configuration and security review.
 - Deployment and final smoke tests.
 - Final project report.
+
+## Week 4 — Demonstration data
+
+- Added backend/seedDemo.js.
+- Creates a separate Pro demo account with three clients,
+  three projects, three tasks, six invoices, and one unbilled entry.
+- Uses a transaction so failed setup rolls back.
+- Existing demo accounts are skipped without changes.
+- Demo password is supplied through DEMO_PASSWORD.
+- Verified dashboard: two active projects, one unpaid invoice,
+  INR 2,000 outstanding, and INR 10,000 collected.
+- Verified rerunning the script skips the existing account.
+
+The script initializes data once; it does not reset modified demo data.
