@@ -9,12 +9,18 @@ require("dotenv").config({
 const DEMO_EMAIL = "demo@freelanceflow.example";
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT || 5432),
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  connectionTimeoutMillis: 5000,
+  ...(process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+      }
+    : {
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT || 5432),
+        database: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+      }),
+  connectionTimeoutMillis: 15000,
 });
 
 async function seedDemo() {
@@ -36,7 +42,7 @@ async function seedDemo() {
   try {
     await connection.query("BEGIN");
 
-    // Prevent simultaneous runs from creating duplicate demo records.
+    // Serialize simultaneous runs of this setup script.
     await connection.query("SELECT pg_advisory_xact_lock(20261019, 4001)");
 
     const existing = await connection.query(
@@ -162,8 +168,8 @@ async function seedDemo() {
 
     const project = projects[0];
 
-    // Five previous months: paid invoices.
-    // Current month: an unpaid invoice.
+    // Previous five months: paid invoices.
+    // Current month: one unpaid invoice.
     for (let monthsAgo = 5; monthsAgo >= 0; monthsAgo -= 1) {
       const entryResult = await connection.query(
         `WITH dates AS (
@@ -200,11 +206,13 @@ async function seedDemo() {
            paid_at, notes, created_at
          )
          VALUES (
-                      $1, $2, $3, $4, $5, $6::text,
+           $1, $2, $3, $4, $5, $6::text,
            ($7::timestamptz AT TIME ZONE 'Asia/Kolkata')::date,
            ($7::timestamptz AT TIME ZONE 'Asia/Kolkata')::date + 14,
-           CASE WHEN $6::text = 'paid'
-             THEN $7::timestamptz ELSE NULL END,
+           CASE
+             WHEN $6::text = 'paid' THEN $7::timestamptz
+             ELSE NULL
+           END,
            'Sample invoice for demonstration.',
            $7::timestamptz
          )
@@ -237,7 +245,7 @@ async function seedDemo() {
       );
     }
 
-    // Leave one finished entry available for the invoice wizard.
+    // One finished entry remains available for invoice creation.
     await connection.query(
       `INSERT INTO time_entries (
          user_id, project_id, description, source,
