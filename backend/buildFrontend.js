@@ -29,7 +29,7 @@ function runNpm(args) {
 }
 
 try {
-  runNpm(["ci"]);
+  runNpm(["ci", "--include=dev"]);
   runNpm(["run", "build"]);
 
   if (!fs.existsSync(path.join(buildDirectory, "index.html"))) {
