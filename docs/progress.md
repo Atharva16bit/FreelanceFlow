@@ -301,3 +301,51 @@ Remaining:
 - Verified rerunning the script skips the existing account.
 
 The script initializes data once; it does not reset modified demo data.
+
+## Week 4 — Live deployment verified
+
+Date: 20 October 2026
+
+Live application:
+https://freelanceflow-steel.vercel.app/
+
+Repository:
+https://github.com/Atharva16bit/FreelanceFlow
+
+Deployment architecture:
+
+- React frontend built with Vite and served by Vercel.
+- Express API exposed through api/index.js.
+- PostgreSQL database hosted on Neon.
+- Sessions stored in PostgreSQL.
+- Deployment secrets configured through Vercel environment variables.
+
+Verified on the live application:
+
+- Demo account login works.
+- Dashboard shows the expected demo financial totals.
+- Refreshing the page preserves the authenticated session.
+- Invoice PDFs download successfully.
+- A running timer survives a browser refresh without resetting.
+- Stopping the timer saves an entry visible in time logs.
+
+Deployment issues resolved:
+
+- Included frontend development dependencies during the build
+  to resolve "vite: command not found".
+- Replaced the backend-only deployment configuration with a
+  repository-root configuration.
+- Published frontend/dist as static output and routed API requests
+  to the Express function.
+
+Limitations:
+
+- Invoice payment status is recorded manually.
+- Monthly financial figures reflect current invoice statuses,
+  not historical month-end balances.
+- The demo seed initializes data once; rerunning it does not reset data.
+
+Remaining handover work:
+
+- Complete README and evaluator instructions.
+- Prepare the final project report.
