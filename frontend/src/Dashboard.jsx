@@ -71,7 +71,7 @@ export default function Dashboard() {
           disabled={loading}
           onClick={() => setRefreshKey((value) => value + 1)}
         >
-          {loading ? "Loading…" : "Refresh overview"}
+          {loading ? "Loading..." : "Refresh overview"}
         </button>
       </div>
 
@@ -83,7 +83,7 @@ export default function Dashboard() {
 
       {loading && (
         <p className="muted" role="status">
-          Updating your overview…
+          Updating your overview...
         </p>
       )}
 
@@ -113,16 +113,15 @@ export default function Dashboard() {
               <p className="dashboard-value">
                 {money(summary.collected_revenue)}
               </p>
-              <p className="muted">Invoices currently marked paid.</p>
+              <p className="muted">Recorded as paid.</p>
             </article>
           </div>
 
           <div className="dashboard-deadlines">
-            <h3>Upcoming task deadlines</h3>
+            <h3>Upcoming deadlines</h3>
 
             <p className="muted">
-              Today and the next seven days, using India Standard Time. Only
-              unfinished tasks in active projects appear.
+              Today and the next 7 days (IST).
             </p>
 
             {summary.overdue_tasks > 0 && (
@@ -133,7 +132,7 @@ export default function Dashboard() {
             )}
 
             {dashboard.upcoming_tasks.length === 0 ? (
-              <p className="muted">No upcoming task deadlines.</p>
+              <p className="muted">No upcoming deadlines.</p>
             ) : (
               <ul className="dashboard-task-list">
                 {dashboard.upcoming_tasks.map((task) => (
@@ -141,7 +140,7 @@ export default function Dashboard() {
                     <div>
                       <strong>{task.title}</strong>
                       <p className="muted">
-                        {task.project_name} · {task.client_name}
+                        {task.project_name} / {task.client_name}
                       </p>
                     </div>
 
@@ -160,7 +159,9 @@ export default function Dashboard() {
               </ul>
             )}
 
-            <p className="muted">Shows up to 10 upcoming tasks.</p>
+            {dashboard.upcoming_tasks.length > 0 && (
+              <p className="muted">Up to 10 unfinished tasks in active projects.</p>
+            )}
           </div>
         </>
       )}

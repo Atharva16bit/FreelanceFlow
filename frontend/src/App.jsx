@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
-import Dashboard from "./Dashboard";
-import Clients from "./Clients";
-import Projects from "./Projects";
-import Tasks from "./Tasks";
-import Timer from "./Timer";
-import TimeLogs from "./TimeLogs";
-import Invoices from "./Invoices";
 import { api } from "./api";
 import "./App.css";
+import Workspace from "./Workspace";
 
 function errorMessage(error) {
   const details = Array.isArray(error.details)
@@ -154,74 +148,20 @@ export default function App() {
   if (checkingSession) {
     return (
       <main className="loading-screen" role="status">
-        Opening your workspace…
+        Opening your workspace...
       </main>
     );
   }
 
   if (user) {
     return (
-      <main className="workspace">
-        <header className="workspace-header">
-          <a className="brand" href="/">
-            <span className="brand-mark" aria-hidden="true">
-              F
-            </span>
-            FreelanceFlow
-          </a>
-
-          <button
-            type="button"
-            className="button-secondary"
-            onClick={handleLogout}
-            disabled={busy}
-          >
-            {busy ? "Signing out…" : "Sign out"}
-          </button>
-        </header>
-
-        <section className="welcome-card">
-          <p className="eyebrow">YOUR WORKSPACE</p>
-
-          <h1>Welcome, {user.name}.</h1>
-
-          <p className="muted">
-            Manage clients, organise projects, track time, and create invoices.
-          </p>
-
-          <dl className="account-details">
-            <div>
-              <dt>Email</dt>
-              <dd>{user.email}</dd>
-            </div>
-
-            <div>
-              <dt>Plan</dt>
-              <dd className="plan-name">{user.plan}</dd>
-            </div>
-          </dl>
-
-          {error && (
-            <p className="error-message" role="alert">
-              {error}
-            </p>
-          )}
-
-          <Dashboard key={`dashboard-${user.id}`} />
-
-          <Clients key={`clients-${user.id}`} />
-
-          <Projects key={`projects-${user.id}`} />
-
-          <Tasks key={`tasks-${user.id}`} />
-
-          <Timer key={`timer-${user.id}`} />
-
-          <TimeLogs key={`time-logs-${user.id}`} />
-
-          <Invoices key={`invoices-${user.id}`} />
-        </section>
-      </main>
+      <Workspace
+        key={user.id}
+        user={user}
+        busy={busy}
+        error={error}
+        onLogout={handleLogout}
+      />
     );
   }
 
@@ -356,8 +296,8 @@ export default function App() {
             <button type="submit" className="button-primary" disabled={busy}>
               {busy
                 ? registering
-                  ? "Creating account…"
-                  : "Signing in…"
+                  ? "Creating account..."
+                  : "Signing in..."
                 : registering
                   ? "Create account"
                   : "Sign in"}

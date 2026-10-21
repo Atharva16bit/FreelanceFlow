@@ -1,114 +1,70 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw);
+
 :root {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
-  color: #182820;
-  background: #f6f7f3;
+  color: #20372c;
+  background: #f5f7f4;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  --ff-green: #194b38;
+  --ff-border: #dfe7df;
 }
 
-* {
-  box-sizing: border-box;
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+a, a:visited { color: inherit; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #6b9d82;
+  outline-offset: 3px;
 }
-
-body {
-  margin: 0;
-  min-width: 320px;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
-a {
-  color: inherit;
-}
-
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #5f9373;
-  outline-offset: 4px;
-}
-.client-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.card-actions {
-  margin-top: 24px;
-}
-
-.client-form,
-.delete-confirmation {
+button, input, select, textarea, fieldset { min-width: 0; }
+fieldset { margin: 0; padding: 0; border: 0; }
+label { display: block; }
+input, select, textarea { max-width: 100%; }
+input[type="date"], input[type="datetime-local"] { min-width: 0; appearance: none; }
+input[type="checkbox"] { width: auto; accent-color: var(--ff-green); }
+button { line-height: 1.35; }
+.client-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.card-actions { margin-top: 22px; }
+.client-form, .delete-confirmation {
   padding: 24px;
   margin: 0 0 24px;
-  border: 1px solid #dce1d7;
-  border-radius: 12px;
-  background: #fafbf8;
+  border: 1px solid var(--ff-border);
+  border-radius: 14px;
+  background: #fbfcfa;
 }
-
-.client-form h3,
-.delete-confirmation h3 {
-  margin: 0 0 20px;
-}
-
-.client-form fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-}
-
-.client-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 20px;
-}
-
-.client-form-grid label {
-  display: block;
-}
-
+.client-form h3, .delete-confirmation h3 { margin: 0 0 20px; }
+.client-form fieldset { min-inline-size: 0; }
+.client-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 20px; }
+.client-form-grid > * { min-width: 0; }
 .button-danger {
-  padding: 13px 18px;
-  border: 1px solid #e6b9af;
-  border-radius: 8px;
+  padding: 11px 16px;
+  min-height: 44px;
+  border: 1px solid #e9c9c4;
+  border-radius: 9px;
   background: #fff;
   color: #9b3020;
   font-weight: 600;
 }
-
-.button-danger:hover:not(:disabled) {
-  background: #fff0ed;
-}
-
+.button-danger:hover:not(:disabled) { background: #fff0ed; }
 .success-message {
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid #c7ddbf;
-  border-radius: 8px;
+  border-radius: 9px;
   background: #eef6e9;
   color: #285036;
   font-size: 14px;
+  line-height: 1.5;
 }
-
-.delete-confirmation > p {
-  line-height: 1.6;
-}
-
+.delete-confirmation > p { line-height: 1.6; }
 @media (max-width: 600px) {
-  .client-form-grid {
-    grid-template-columns: 1fr;
-  }
+  .client-form-grid { grid-template-columns: 1fr; }
+  .client-form, .delete-confirmation { padding: 18px; }
 }

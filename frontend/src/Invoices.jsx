@@ -346,7 +346,7 @@ export default function Invoices() {
         </article>
       )}
 
-      <div className="client-actions card-actions">
+      <div className="client-actions card-actions invoice-pagination">
         <button
           type="button"
           className="button-secondary"
