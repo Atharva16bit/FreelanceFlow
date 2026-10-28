@@ -209,7 +209,7 @@ export default function Invoices() {
         <div className="client-grid">
           {invoices.map((invoice) => (
             <article className="client-card" key={invoice.id}>
-              <span className="status-badge">{invoice.status}</span>
+              <span className="status-badge" data-status={invoice.status}>{invoice.status}</span>
 
               <h3>Invoice FF-{invoice.id}</h3>
 

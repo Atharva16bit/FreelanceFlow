@@ -431,7 +431,7 @@ export default function Projects() {
         <div className="client-grid">
           {projects.map((project) => (
             <article className="client-card" key={project.id}>
-              <span className="status-badge">{project.status}</span>
+              <span className="status-badge" data-status={project.status}>{project.status}</span>
               <h3>{project.name}</h3>
               <p className="muted">{project.client_name}</p>
 

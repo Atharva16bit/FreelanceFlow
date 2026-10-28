@@ -175,7 +175,7 @@ export default function RevenueChart() {
                   barGap={4}
                 >
                   <CartesianGrid
-                    stroke="#e4e9e2"
+                    stroke="#dee3dd"
                     strokeDasharray="3 3"
                     vertical={false}
                   />
@@ -225,7 +225,7 @@ export default function RevenueChart() {
                   <Bar
                     dataKey="collected_revenue"
                     name="Collected"
-                    fill="#286347"
+                    fill="#244b3a"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={36}
                     isAnimationActive={false}
@@ -234,7 +234,7 @@ export default function RevenueChart() {
                   <Bar
                     dataKey="outstanding_amount"
                     name="Outstanding"
-                    fill="#c1832d"
+                    fill="#c18b35"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={36}
                     isAnimationActive={false}

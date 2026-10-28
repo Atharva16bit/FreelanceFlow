@@ -1,0 +1,125 @@
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/Inter-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/Inter-Medium.ttf") format("truetype"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/Inter-Semibold.ttf") format("truetype"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/Inter-Bold.ttf") format("truetype"); }
+
+/* FreelanceFlow theme. Loaded after the existing component styles. */
+:root {
+  --ff-canvas: #f7f7f4;
+  --ff-surface: #fff;
+  --ff-ink: #202722;
+  --ff-muted: #626c65;
+  --ff-border: #dee3dd;
+  --ff-green: #244b3a;
+  --ff-green-hover: #193a2b;
+  --ff-selected: #eaf0e9;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: var(--ff-ink);
+  background: var(--ff-canvas);
+  font-size: 14px;
+  line-height: 1.5;
+}
+body { background: var(--ff-canvas); }
+.muted, .form-note, .password-help, .metric-note { color: var(--ff-muted); }
+:where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+input:focus, select:focus, textarea:focus { outline-color: #2563eb; }
+.button-primary { background: var(--ff-green); border-color: var(--ff-green); }
+.button-primary:hover:not(:disabled) { background: var(--ff-green-hover); }
+.button-secondary { color: var(--ff-ink); background: #fff; border-color: var(--ff-border); }
+:is(.button-primary, .button-secondary, .button-danger) { border-radius: 6px; }
+.intro-panel { background: #193a2b; }
+.brand-mark { background: #dce8d8; color: var(--ff-green); }
+.login-card h2 { font-size: 28px; font-weight: 600; letter-spacing: -.7px; }
+input, select, textarea { border-color: var(--ff-border); border-radius: 6px; font-size: 16px; }
+.workspace.workspace-with-navigation { max-width: 1440px; padding-inline: 40px; }
+.workspace-with-navigation .workspace-header { background: var(--ff-canvas); border-color: var(--ff-border); gap: 16px; flex-wrap: wrap; }
+.workspace-with-navigation .brand { color: var(--ff-ink); font-size: 18px; }
+.workspace-navigation-link, .workspace-navigation-link:visited { color: var(--ff-muted); font-size: 13px; }
+.workspace-navigation-link[aria-current="page"] { background: var(--ff-selected); color: var(--ff-green); box-shadow: none; border-radius: 6px; }
+.workspace-navigation-link:hover { background: #eff1ec; color: var(--ff-ink); }
+.workspace-plan { color: var(--ff-green); background: var(--ff-selected); border: 0; border-radius: 4px; font-size: 12px; }
+.workspace-page-heading { margin-bottom: 28px; }
+.workspace-page-heading .eyebrow { display: none; }
+.workspace-page-heading h1 { font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -.7px; color: var(--ff-ink); }
+.workspace-description { font-size: 14px; line-height: 21px; margin-top: 8px; }
+.workspace-content .section-heading h2, .workspace-content .dashboard-heading h2 { font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: -.3px; }
+/* Preserve semantic section headings without repeating their visible page title. */
+.workspace-view > .clients-section:first-child > .section-heading > div:first-child {
+  position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.workspace-content .section-heading { justify-content: flex-end; }
+.workspace-content :is(.client-card, .client-form, .invoice-detail, .dashboard-stat, .dashboard-deadlines) {
+  background: var(--ff-surface); border: 1px solid var(--ff-border); border-radius: 8px; box-shadow: none;
+}
+.workspace-content .client-card h3 { color: var(--ff-ink); font-size: 17px; font-weight: 600; letter-spacing: -.25px; }
+.workspace-content .client-card { padding: 20px; }
+.workspace-content :is(.button-primary, .button-secondary, .button-danger) { border-radius: 6px; min-height: 44px; font-size: 14px; padding: 10px 14px; }
+.workspace-content .button-secondary:hover:not(:disabled) { background: #f3f5f1; }
+.workspace-content label { font-size: 13px; color: var(--ff-ink); }
+.workspace-content :is(input, select, textarea) { font-size: 16px; border-color: var(--ff-border); border-radius: 6px; color: var(--ff-ink); }
+.client-details dt, .account-details dt { font-size: 12px; color: var(--ff-muted); }
+.client-details dd { color: var(--ff-ink); }
+.workspace-content .dashboard-stat { padding: 18px 20px; }
+.workspace-content .dashboard-stat h3 { font-size: 13px; color: var(--ff-muted); font-weight: 400; }
+.workspace-content .dashboard-value { font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -.6px; color: var(--ff-ink); margin-top: 10px; }
+.workspace-content .dashboard-stat .muted { font-size: 12px; line-height: 18px; margin-top: 4px; }
+.workspace-content .dashboard-deadlines { padding: 20px; }
+.workspace-content .dashboard-deadlines h3 { font-size: 18px; font-weight: 600; }
+.workspace-content .dashboard-deadlines > .muted { font-size: 13px; }
+.dashboard-task { align-items: center; padding-block: 14px; border-color: var(--ff-border); }
+.dashboard-task:last-child { border-bottom: 0; }
+.dashboard-task strong { font-weight: 600; }
+.dashboard-task p { font-size: 13px; }
+.dashboard-task-meta { font-size: 13px; }
+.workspace-content .revenue-section { margin-top: 28px; padding-top: 24px; border-color: var(--ff-border); }
+.revenue-section h2 { margin: 0; font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: -.3px; }
+.revenue-section .muted { font-size: 13px; line-height: 20px; }
+.workspace-content .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 18px; font-weight: 500; padding: 4px 8px; border-radius: 4px; background: #f0f2ef; color: #59635c; }
+.status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.workspace-content .status-badge:is([data-status="paid"], [data-status="completed"]) { color: #27603d; background: #edf5ef; }
+.workspace-content .status-badge:is([data-status="active"], [data-status="in_progress"], [data-status="running"]) { color: #285b85; background: #edf3f9; }
+.workspace-content .status-badge[data-status="unpaid"] { color: #82520b; background: #fff4df; }
+.dashboard-task .status-badge { margin: 0; }
+.invoice-table th { background: #f4f5f1; font-size: 12px; font-weight: 600; color: var(--ff-muted); }
+.invoice-table :is(th,td) { border-color: var(--ff-border); }
+.invoice-table :is(th,td):not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.invoice-total, .timer-clock, .dashboard-value, .project-metrics dd { font-variant-numeric: tabular-nums; }
+.empty-state { background: #fff; border-color: var(--ff-border); border-radius: 8px; color: var(--ff-muted); }
+.client-avatar { background: var(--ff-selected); color: var(--ff-green); border-radius: 8px; }
+.budget-progress { accent-color: var(--ff-green); height: 8px; }
+.workspace-content .timer-clock { color: var(--ff-ink); }
+/* The portal keeps one timer instance and the existing stop handler. */
+.workspace-timer-slot:empty { display: none; }
+.workspace-timer-slot { order: 4; width: 100%; display: flex; justify-content: flex-end; }
+.running-timer { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; max-width: 100%; padding: 6px 8px 6px 12px; background: #fff; border: 1px solid var(--ff-border); border-radius: 6px; }
+.running-timer-link { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ff-ink); text-decoration: none; font-size: 13px; }
+.running-timer-dot { width: 7px; height: 7px; border-radius: 50%; background: #27603d; flex-shrink: 0; }
+.running-timer-project { max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.running-timer-clock { font-variant-numeric: tabular-nums; font-weight: 600; padding-left: 10px; border-left: 1px solid var(--ff-border); }
+.running-timer .button-secondary { min-height: 36px; padding: 7px 12px; font-size: 13px; }
+.running-timer-error { flex-basis: 100%; color: #a3322a; font-size: 12px; }
+@media (max-width: 1150px) and (min-width: 761px) {
+  .workspace-navigation { order: 3; width: 100%; }
+}
+@media (max-width: 760px) {
+  .workspace.workspace-with-navigation { padding-inline: 20px; }
+  .workspace-with-navigation .workspace-header { gap: 8px; }
+  .workspace-with-navigation .brand { font-size: 16px; }
+  .workspace-content .dashboard-value { font-size: 26px; line-height: 32px; }
+  .workspace-content .dashboard-stat { padding: 16px; }
+  .workspace-page-heading h1 { font-size: 26px; line-height: 32px; }
+  .workspace-timer-slot { justify-content: stretch; }
+  .running-timer { width: 100%; justify-content: space-between; }
+  .running-timer-project { max-width: 135px; }
+  .running-timer-link { gap: 8px; font-size: 12px; }
+  .dashboard-task { align-items: flex-start; }
+}
+@media (max-width: 380px) {
+  .workspace.workspace-with-navigation { padding-inline: 14px; }
+  .workspace-content .dashboard-grid { grid-template-columns: 1fr; }
+  .running-timer-project { max-width: 100px; }
+}

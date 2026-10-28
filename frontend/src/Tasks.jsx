@@ -337,7 +337,7 @@ export default function Tasks() {
         <div className="client-grid">
           {tasks.map((task) => (
             <article className="client-card" key={task.id}>
-              <span className="status-badge">{statusLabels[task.status]}</span>
+              <span className="status-badge" data-status={task.status}>{statusLabels[task.status]}</span>
 
               <h3>{task.title}</h3>
               <p className="muted">{task.project_name}</p>

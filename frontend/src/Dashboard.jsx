@@ -60,9 +60,7 @@ export default function Dashboard() {
       <div className="dashboard-heading">
         <div>
           <h2 id="dashboard-title">Business overview</h2>
-          <p className="muted">
-            Your projects, invoices, and approaching deadlines.
-          </p>
+
         </div>
 
         <button
@@ -148,7 +146,7 @@ export default function Dashboard() {
                       <time dateTime={task.due_date}>
                         {displayDate(task.due_date)}
                       </time>
-                      <span>
+                      <span className="status-badge" data-status={task.status}>
                         {task.status === "in_progress"
                           ? "In progress"
                           : "To do"}

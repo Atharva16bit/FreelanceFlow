@@ -51,6 +51,7 @@ export default function Workspace({ user, busy, error, onLogout }) {
   const menuButtonRef = useRef(null);
   const focusMenuAfterOpening = useRef(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [timerSlot, setTimerSlot] = useState(null);
   const panelRef = useRef(null);
   const focusAfterNavigation = useRef(false);
   const selected = sections.find((section) => section.id === activeSection);
@@ -183,6 +184,7 @@ export default function Workspace({ user, busy, error, onLogout }) {
         </div>
       </nav>
 
+        <div className="workspace-timer-slot" ref={setTimerSlot} />
         <div className="workspace-account">
           <span className="workspace-plan">{user.plan}</span>
           <button
@@ -253,7 +255,7 @@ export default function Workspace({ user, busy, error, onLogout }) {
 
         {/* This stays mounted at a stable position so navigation cannot reset it. */}
         <div className="workspace-view" hidden={activeSection !== "time"}>
-          <Timer />
+          <Timer headerSlot={timerSlot} />
           {activeSection === "time" && <TimeLogs />}
         </div>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { api } from "./api";
 
 function formatDuration(seconds) {
@@ -23,7 +24,7 @@ function timerSnapshot(timer) {
   };
 }
 
-export default function Timer() {
+export default function Timer({ headerSlot }) {
   const [timer, setTimer] = useState(null);
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
@@ -149,6 +150,18 @@ export default function Timer() {
   }
 
   return (
+    <>
+      {timer && headerSlot && createPortal(
+        <div className="running-timer">
+          <a href="#ff-time" className="running-timer-link" aria-label="Open running timer">
+            <span className="running-timer-dot" aria-hidden="true" />
+            <span className="running-timer-project">{timer.project_name || projects.find((project) => project.id === timer.project_id)?.name || "Current project"}</span>
+            <span className="running-timer-clock">{formatDuration(seconds)}</span>
+          </a>
+          <button type="button" className="button-secondary" disabled={busy || loading} onClick={stopTimer}>{busy ? "Saving…" : "Stop"}</button>
+          {error && <a className="running-timer-error" href="#ff-time" role="alert">Could not update timer. Open Time for details.</a>}
+        </div>, headerSlot
+      )}
     <section className="clients-section" aria-labelledby="timer-heading">
       <div className="section-heading">
         <div>
@@ -184,7 +197,7 @@ export default function Timer() {
         </p>
       ) : timer ? (
         <div className="client-card">
-          <span className="status-badge">Running</span>
+          <span className="status-badge" data-status="running">Running</span>
 
           <h3>
             {timer.project_name ||
@@ -203,7 +216,7 @@ export default function Timer() {
 
           <button
             type="button"
-            className="button-danger"
+            className="button-secondary"
             onClick={stopTimer}
             disabled={busy}
           >
@@ -257,5 +270,6 @@ export default function Timer() {
         </form>
       )}
     </section>
+    </>
   );
 }
