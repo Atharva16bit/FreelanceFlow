@@ -4,6 +4,11 @@
   "installCommand": "npm ci --prefix backend && npm ci --prefix frontend --include=dev",
   "buildCommand": "npm run build --prefix frontend",
   "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "backend/node_modules/pdfkit/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
